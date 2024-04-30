@@ -12,9 +12,14 @@ fn main() {
     let mut path = VecDeque::new();
     println! ("Welcome to the Texas GPS!\n");
     loop {
-        println! ("Options:\n'add' - add a new stop\n'exit'- terminate GPS\n");
+        println! ("Options:\n'add' - add a new stop\n'next' - arrived at the next stop\n'remove' - remove a stop\n'exit' - terminate GPS\n");
         println! ("Current path: {:?}", path);
-        println! ("Remaining Distance: {:?}", functions::check_distance(&path, &graph.outedges));
+        if path.len() > 0 {
+            println! ("               ^");
+            println! ("          Currently here\n");
+        }
+        println! ("Remaining Distance: {:?}\n", functions::check_distance(&path, &graph.outedges));
+        
         let mut input = String::new();
         io::stdin().read_line(&mut input).expect("Failed to read line");
         let input = input.trim();
@@ -25,9 +30,18 @@ fn main() {
                     Err(err) => println! ("{}", err),
                 }
             },
+            "next" => {
+                let _ = path.pop_front();
+            },
+            "remove" => {
+                match functions::remove_stop(&mut path) {
+                    Ok(result) => continue,
+                    Err(err) => println! ("{}", err),
+                }
+            }
             "exit" => break,
             _ => println! ("Not a valid input!\n"),
-        }
+        };
         println! (" -----------------------\n");
         println! ("");
     }

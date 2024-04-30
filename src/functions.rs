@@ -1,6 +1,5 @@
 pub mod functions{
     // using Graph from the graph module, File for file-reading capabilities
-    use crate::graph::Graph;
     use std::fs::File;
     use std::io::prelude::*;
     use std::io;
@@ -26,15 +25,28 @@ pub mod functions{
         println! ("\nPlease input the node #: ");
         let node = read_node();
 
+        if node < 0 || node > 3843320 {
+            return Err("Nodes ourside range!".to_string());
+        }
 
-        if node < 0  {
-            return Err("Nodes can't be negative!".to_string());
-        }
-        if node > 3843320 {
-            return Err("Node outside range!".to_string());
-        }
         return Ok(node);
     } 
+
+    pub fn remove_stop(path: &mut VecDeque<usize>) -> Result<usize, String> {
+        println! ("\nPlease input the node #: ");
+        let node = read_node();
+
+        if node < 0 || node > 3843320 {
+            return Err("Nodes outside range!".to_string());
+        }
+
+        if let Some(index) = path.iter().position(|&x| x == node) {
+            path.remove(index);
+            return Ok(0);
+        } else {
+            return Err("Node not found in path!".to_string());
+        }
+    }
 
     pub fn check_distance(path: &VecDeque<usize>, outedges: &Vec<Vec<usize>>) -> u64 {
         if path.len() == 0 || path.len() == 1 {
@@ -73,6 +85,7 @@ pub mod functions{
         io::stdin().read_line(&mut input).expect("Failed to read line");
         let input = input.trim();
         let node: usize = input.parse().expect("Not a good number!");
+        println!();
         return node;
         
     }
