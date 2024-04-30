@@ -4,7 +4,7 @@ pub mod functions{
     use std::fs::File;
     use std::io::prelude::*;
     use std::io;
-
+    use std::collections::VecDeque;
     
 
     pub fn read_file(path: &str) -> Vec<(usize, usize)> {
@@ -22,17 +22,51 @@ pub mod functions{
         return result;
     }
 
-    pub fn add_edge() -> Result<(usize,usize), String> {
-        println! ("\nPlease input the start node: ");
-        let node1 = read_node();
-        println! ("\nPlease input the end node: ");
-        let node2 = read_node();
+    pub fn add_stop() -> Result<usize, String> {
+        println! ("\nPlease input the node #: ");
+        let node = read_node();
 
-        if node1 < 0 || node2 < 0 {
+
+        if node < 0  {
             return Err("Nodes can't be negative!".to_string());
         }
-        return Ok((node1, node2));
+        if node > 3843320 {
+            return Err("Node outside range!".to_string());
+        }
+        return Ok(node);
     } 
+
+    pub fn check_distance(path: &VecDeque<usize>, outedges: &Vec<Vec<usize>>) -> u64 {
+        if path.len() == 0 || path.len() == 1 {
+            return 0;
+        }
+
+        let mut dist = 0;
+
+        for i in 0..path.len()-1 {
+            let node1 = path.get(i).unwrap();
+            let node2 = path.get(i+1).unwrap();
+            dist += bfs(node1, node2, &outedges)
+        }
+
+        return dist;
+    }
+
+    fn bfs(start: &usize, end: &usize, outedges: &Vec<Vec<usize>>) -> u64{
+        let mut distance: Vec<Option<u64>> = vec![None;outedges.len()];
+        distance[*start] = Some(0);
+        let mut queue: VecDeque<usize> = VecDeque::new();
+        queue.push_back(*start);
+        while let Some(v) = queue.pop_front() { 
+            for u in outedges[v].iter() {
+                if let None = distance[*u] { 
+                    distance[*u] = Some(distance[v].unwrap() + 1);
+                    queue.push_back(*u);
+                }
+            }
+        }
+        return distance[*end].expect("Failed to read distance");
+    }
 
     fn read_node() -> usize {
         let mut input = String::new();
@@ -42,4 +76,5 @@ pub mod functions{
         return node;
         
     }
+
 }
