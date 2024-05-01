@@ -25,8 +25,8 @@ pub mod functions{
         println! ("\nPlease input the node #: ");
         let node = read_node();
 
-        if node < 0 || node > 3843320 {
-            return Err("Nodes ourside range!".to_string());
+        if node > 3843320 {
+            return Err("Node outside range!".to_string());
         }
 
         return Ok(node);
@@ -36,8 +36,8 @@ pub mod functions{
         println! ("\nPlease input the node #: ");
         let node = read_node();
 
-        if node < 0 || node > 3843320 {
-            return Err("Nodes outside range!".to_string());
+        if node > 3843320 {
+            return Err("Node outside range!".to_string());
         }
 
         if let Some(index) = path.iter().position(|&x| x == node) {
@@ -62,6 +62,25 @@ pub mod functions{
         }
 
         return dist;
+    }
+
+    pub fn compute_average(path: &VecDeque<usize>, outedges: &Vec<Vec<usize>>) -> Result<f64, String> {
+        println! ("\nPlease input the node #: ");
+        let node = read_node();
+
+        if node > 3843320 {
+            return Err("Node outside range!".to_string());
+        }
+        else if !path.contains(&node) {
+            return Err("Node not in path".to_string());
+        }
+        
+        let mut sum = 0;
+        for i in path {
+            sum += bfs(&node, i, outedges);
+        }
+
+        return Ok((sum as f64) / ((path.len()-1) as f64))
     }
 
     fn bfs(start: &usize, end: &usize, outedges: &Vec<Vec<usize>>) -> u64{
